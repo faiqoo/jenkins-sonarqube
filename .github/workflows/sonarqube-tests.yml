@@ -42,7 +42,7 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
           mvn sonar:sonar \
-            -Dsonar.projectKey=jenkins-trace-forensics \
-            -Dsonar.projectName="Jenkins Trace Forensics" \
+            -Dsonar.projectKey=Test_Personal_Project \
+            -Dsonar.projectName="Test_Personal_Project" \
             -Dsonar.java.binaries=**/target/classes \
-            -DskipTests -Deslint.skip=true
+            -Dyarn.lint.skip=true
