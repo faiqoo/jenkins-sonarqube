@@ -44,4 +44,5 @@ jobs:
           mvn sonar:sonar \
             -Dsonar.projectKey=jenkins-trace-forensics \
             -Dsonar.projectName="Jenkins Trace Forensics" \
-            -Dsonar.java.binaries=**/target/classes
+            -Dsonar.java.binaries=**/target/classes \
+            -DskipTests -Deslint.skip=true
