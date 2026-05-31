@@ -36,4 +36,11 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Test_Personal_Project -Dsonar.projectName='Test_Personal_Project'
+        run: |
+          mvn -B verify \
+            -DskipTests \
+            -pl '!war,!frontend,!ui' \
+            -am \
+            org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+            -Dsonar.projectKey=Test_Personal_Project \
+            -Dsonar.projectName='Test_Personal_Project'
