@@ -1,0 +1,47 @@
+name: SonarQube Trace-Based Analysis
+
+on:
+  push:
+    branches:
+      - feat/trace-forensics-scan
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  sonarqube-analysis:
+    name: Build and Scan Jenkins Core
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+      - name: Set up JDK 11 (or JDK 17 depending on Jenkins branch requirement)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+          cache: 'maven'
+
+      - name: Cache SonarQube packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      # Compile step ensures SonarQube reads the bytecode for deep dataflow/taint analysis
+      - name: Build Jenkins Core
+        run: mvn clean compile -DskipTests
+
+      - name: Run SonarQube Scan
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          mvn sonar:sonar \
+            -Dsonar.projectKey=jenkins-trace-forensics \
+            -Dsonar.projectName="Jenkins Trace Forensics" \
+            -Dsonar.java.binaries=**/target/classes
